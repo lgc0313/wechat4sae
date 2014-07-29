@@ -79,14 +79,8 @@ public class CoreService {
 					textMessage.setContent(contentMsg.toString());
 
 				} else if ("2".equals(content) || "天气".equals(content)) {
-					String str= WeatherSevice
+					contentMsg= WeatherSevice
 							.getWeather("大连");
-					contentMsg = new StringBuffer();
-//					contentMsg.append(map.get("city").toString()
-//							+ map.get("temp").toString() + "度，"
-//							+ map.get("WD").toString()
-//							+ map.get("WS").toString() + "。");
-
 					textMessage.setContent(contentMsg.toString());
 
 				}
