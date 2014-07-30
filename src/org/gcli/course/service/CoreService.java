@@ -10,6 +10,7 @@ import org.gcli.caipiao.GetLotteryByURL;
 import org.gcli.caipiao.Lottery;
 import org.gcli.course.message.resp.TextMessage;
 import org.gcli.course.util.MessageUtil;
+import org.gcli.robot.Chat4XiaoI;
 import org.gcli.weather.WeatherSevice;
 
 /**
@@ -79,9 +80,12 @@ public class CoreService {
 					textMessage.setContent(contentMsg.toString());
 
 				} else if ("2".equals(content) || "天气".equals(content)) {
-					contentMsg= WeatherSevice
-							.getWeather("大连");
+					contentMsg = WeatherSevice.getWeather("大连");
 					textMessage.setContent(contentMsg.toString());
+
+				} else {
+					String str = Chat4XiaoI.Tess(content, "crazylee");
+					textMessage.setContent(str);
 
 				}
 
