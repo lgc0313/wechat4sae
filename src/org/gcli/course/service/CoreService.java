@@ -12,6 +12,7 @@ import org.gcli.course.message.resp.TextMessage;
 import org.gcli.course.util.MessageUtil;
 import org.gcli.robot.Chat4XiaoI;
 import org.gcli.weather.WeatherSevice;
+import org.gcli.weixin.util.WeixinUtil;
 
 /**
  * 核心服务类
@@ -51,12 +52,6 @@ public class CoreService {
 			textMessage.setFuncFlag(0);
 			// 由于href属性值必须用双引号引起，这与字符串本身的双引号冲突，所以要转义
 			StringBuffer contentMsg = new StringBuffer();
-			contentMsg.append("您好，我是机器人，请回复数字选择服务：").append("\n\n");
-			contentMsg.append("1  彩票开奖信息").append("\n");
-			contentMsg.append("2  天气信息").append("\n");
-			contentMsg.append("3  聊天唠嗑").append("\n");
-
-			textMessage.setContent(contentMsg.toString());
 			// 将文本消息对象转换成xml字符串
 			// 文本消息
 			if (msgType.equals("text")) {
@@ -64,10 +59,16 @@ public class CoreService {
 				// 接收用户发送的文本消息内容
 				String content = requestMap.get("Content");
 
-				if ("?".equals(content)||"？".equals(content)) {
+				if ("?".equals(content) || "？".equals(content)) {
+					contentMsg.append("您好，我是机器人，请回复数字选择服务：").append("\n\n");
+					contentMsg.append("1  彩票开奖信息").append("\n");
+					contentMsg.append("2  天气信息").append("\n");
+					contentMsg.append("3  聊天唠嗑").append("\n");
+
+				} else if (WeixinUtil.isQqFace(content)) {
+					contentMsg.append(content);
 
 				} else if ("1".equals(content) || "彩票".equals(content)) {
-					contentMsg = new StringBuffer();
 					GetLotteryByURL cp = new GetLotteryByURL();
 					Lottery[] fc = cp.getLotterys();
 					contentMsg
@@ -83,16 +84,12 @@ public class CoreService {
 					contentMsg = WeatherSevice.getWeather("大连");
 
 				} else if ("3".equals(content)) {
-					contentMsg = new StringBuffer();
-					contentMsg
-					.append("聊天唠嗑使用说明")
-					.append("\n").append("闲来无聊，找我唠嗑吧。我很能聊的，有问必答！例如：")
-					.append("\n").append("讲个笑话")
-					.append("\n").append("大连有什么好玩的")
-					.append("\n").append("特价机票");
+					contentMsg.append("聊天唠嗑使用说明").append("\n")
+							.append("闲来无聊，找我唠嗑吧。我很能聊的，有问必答！例如：").append("\n")
+							.append("讲个笑话").append("\n").append("大连有什么好玩的")
+							.append("\n").append("特价机票");
 
-				}else {
-					contentMsg = new StringBuffer();
+				} else {
 					contentMsg.append(Chat4XiaoI.Tess(content, "crazylee"));
 
 				}
