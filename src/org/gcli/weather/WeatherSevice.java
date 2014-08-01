@@ -69,10 +69,16 @@ public class WeatherSevice {
 				for (int i = 0; i < 4; i++) {
 					weatherinfo[i]=(week[i]+" "+temperature[i]+" "+weather[i]+" "+wind[i]+"\n");
 				} 
+				Article article = new Article();  
+                article.setTitle(city+"天气预报");  
+                article.setDescription("");  
+                article.setPicUrl("");  
+                article.setUrl("");  
+                
 				Article article1 = new Article();  
                 article1.setTitle(weatherinfo[0]);  
                 article1.setDescription("");  
-                article1.setPicUrl("");  
+                article1.setPicUrl(dayPictureUrl[0]);  
                 article1.setUrl("");  
 
                 Article article2 = new Article();  
@@ -93,6 +99,7 @@ public class WeatherSevice {
                 article4.setPicUrl(dayPictureUrl[3]);  
                 article4.setUrl(""); 
 
+                articleList.add(article);  
                 articleList.add(article1);  
                 articleList.add(article2);  
                 articleList.add(article3);  
