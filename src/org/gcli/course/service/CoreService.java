@@ -1,6 +1,7 @@
 package org.gcli.course.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.gcli.caipiao.GetLotteryByURL;
 import org.gcli.caipiao.Lottery;
+import org.gcli.course.message.resp.Article;
+import org.gcli.course.message.resp.NewsMessage;
 import org.gcli.course.message.resp.TextMessage;
 import org.gcli.course.util.MessageUtil;
 import org.gcli.robot.Chat4XiaoI;
@@ -31,6 +34,7 @@ public class CoreService {
 	public static String processRequest(HttpServletRequest request) {
 		String respMessage = null;
 		TextMessage textMessage = null;
+		NewsMessage newsMessage = null; 
 		try {
 			// xml请求解析
 			log.debug("CoreService---start");
@@ -80,7 +84,16 @@ public class CoreService {
 									+ fc[1].getOpentime() + "。");
 
 				} else if ("2".equals(content) || "天气".equals(content)) {
-					contentMsg = WeatherSevice.getWeather("大连");
+						newsMessage = new NewsMessage(); 
+		                newsMessage.setToUserName(fromUserName);  
+		                newsMessage.setFromUserName(toUserName);  
+		                newsMessage.setCreateTime(new Date().getTime());  
+		                newsMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);  
+		                newsMessage.setFuncFlag(0);  
+		                List<Article> articleList = WeatherSevice.getWeather("大连");
+		                newsMessage.setArticleCount(articleList.size());  
+	                    newsMessage.setArticles(articleList);  
+	                    respMessage = MessageUtil.newsMessageToXml(newsMessage);
 
 				} else if ("3".equals(content)) {
 					contentMsg = new StringBuffer();
@@ -140,6 +153,9 @@ public class CoreService {
 		}
 
 		respMessage = MessageUtil.textMessageToXml(textMessage);
+		if (newsMessage!=null){
+			respMessage =MessageUtil.newsMessageToXml(newsMessage);
+		}
 		return respMessage;
 	}
 
