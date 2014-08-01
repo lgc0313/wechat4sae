@@ -15,6 +15,7 @@ import org.gcli.course.message.resp.TextMessage;
 import org.gcli.course.util.MessageUtil;
 import org.gcli.robot.Chat4XiaoI;
 import org.gcli.weather.WeatherSevice;
+import org.gcli.weixin.util.WeixinUtil;
 
 /**
  * 核心服务类
@@ -55,10 +56,7 @@ public class CoreService {
 			textMessage.setFuncFlag(0);
 			// 由于href属性值必须用双引号引起，这与字符串本身的双引号冲突，所以要转义
 			StringBuffer contentMsg = new StringBuffer();
-			contentMsg.append("您好，我是机器人，请回复数字选择服务：").append("\n\n");
-			contentMsg.append("1  彩票开奖信息").append("\n");
-			contentMsg.append("2  天气信息").append("\n");
-			contentMsg.append("3  聊天唠嗑").append("\n");
+			
 
 			textMessage.setContent(contentMsg.toString());
 			// 将文本消息对象转换成xml字符串
@@ -69,10 +67,18 @@ public class CoreService {
 				// 接收用户发送的文本消息内容
 				String content = requestMap.get("Content");
 
-				if ("?".equals(content) || "？".equals(content)) {
-					log.debug("？");
+				if (content==null || "".equals(content)||"?".equals(content) || "？".equals(content)) {
+					log.debug("空");
+					contentMsg.append("您好，我是机器人，请回复数字选择服务：").append("\n\n");
+					contentMsg.append("1  彩票开奖信息").append("\n");
+					contentMsg.append("2  天气信息").append("\n");
+					contentMsg.append("3  聊天唠嗑").append("\n");
 
-				} else if ("1".equals(content) || "彩票".equals(content)) {
+				} else if (WeixinUtil.isQqFace(content)) {
+					log.debug("QQ表情");
+					contentMsg.append(content);
+
+				}else if ("1".equals(content) || "彩票".equals(content)) {
 					log.debug("1");
 					contentMsg = new StringBuffer();
 					GetLotteryByURL cp = new GetLotteryByURL();
@@ -92,7 +98,17 @@ public class CoreService {
 					contentMsg.append("天气查询指南").append("\n\n").append("回复： 天气+城市名称").append("\n");
 					contentMsg.append("例如： 天气大连").append("\n");
 					contentMsg.append("或者： 大连天气").append("\n\n").append("回复\"？\"显示主菜单");;
-				} else if (content.startsWith("天气")) {
+				} else if ("3".equals(content)) {
+					log.debug("3");
+					contentMsg = new StringBuffer();
+					contentMsg
+						.append("聊天唠嗑使用说明")
+						.append("\n").append("闲来无聊，找我唠嗑吧。我很能聊的，有问必答！例如：")
+						.append("\n").append("讲个笑话")
+						.append("\n").append("大连有什么好玩的")
+						.append("\n").append("特价机票");
+
+						}else if (content.startsWith("天气")) {
 					log.debug("startsWith天气");
 					String city=content.substring(2);
 					 List<Article> articleList = WeatherSevice.getWeather(city);
@@ -134,17 +150,7 @@ public class CoreService {
 						
 					}
 
-		} else if ("3".equals(content)) {
-			log.debug("3");
-			contentMsg = new StringBuffer();
-			contentMsg
-				.append("聊天唠嗑使用说明")
-				.append("\n").append("闲来无聊，找我唠嗑吧。我很能聊的，有问必答！例如：")
-				.append("\n").append("讲个笑话")
-				.append("\n").append("大连有什么好玩的")
-				.append("\n").append("特价机票");
-
-				}else {
+		} else {
 					log.debug("talk");
 					contentMsg = new StringBuffer();
 					contentMsg.append(Chat4XiaoI.Tess(content, "crazylee"));
@@ -193,9 +199,11 @@ public class CoreService {
 			e.printStackTrace();
 		}
 
-		respMessage = MessageUtil.textMessageToXml(textMessage);
+		
 		if (newsMessage!=null){
 			respMessage =MessageUtil.newsMessageToXml(newsMessage);
+		} else {
+			respMessage = MessageUtil.textMessageToXml(textMessage);
 		}
 		return respMessage;
 	}
